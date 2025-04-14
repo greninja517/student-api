@@ -1,0 +1,48 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go build artifacts
+/bin/
+/build/
+/dist/
+
+# Go vendor directory (if not using Go modules)
+vendor/
+
+# Dependency directories
+Gopkg.lock
+Gopkg.toml
+
+# Go modules
+go.sum
+
+# IDE/editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Env files (sensitive info)
+.env
+.env.*
+
+# Config files with secrets or local overrides
+config/secrets.yaml
+config/config.yaml        # Only if this contains sensitive or env-specific info
+config/prod.yaml
+
+# Test coverage
+coverage.out
+
+# OS-specific files
+.DS_Store
+Thumbs.db
