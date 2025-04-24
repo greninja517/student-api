@@ -12,15 +12,23 @@ import (
 
 	"github.com/greninja517/student-api/internal/config"
 	"github.com/greninja517/student-api/internal/http/handlers/student"
+	"github.com/greninja517/student-api/internal/storage/sqlite"
 )
 
 func main() {
 	// loading the server configuration
 	cfg := config.ConfigurationLoader()
 
+	//setting up the Database
+	storage, err := sqlite.New(cfg)
+	if err != nil {
+		log.Fatal("Failed to connect to Database. Error: ", err)
+	}
+	slog.Info("Database Initialized.... ", slog.String("Status", "Success"))
+
 	// setting up the router
 	router := http.NewServeMux()
-	router.HandleFunc("POST /students", student.CreateStudent())
+	router.HandleFunc("POST /students", student.Student(storage))
 
 	// setting up the server
 	server := &http.Server{

@@ -6,13 +6,15 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/greninja517/student-api/internal/http/types"
 	"github.com/greninja517/student-api/internal/http/utils/response"
+	"github.com/greninja517/student-api/internal/storage"
 )
 
-func CreateStudent() http.HandlerFunc {
+func Student(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
@@ -48,8 +50,19 @@ func CreateStudent() http.HandlerFunc {
 			return
 		}
 
-		// Resource Creation in no Error in Encountered
-		slog.Info("Student Created Successfully", slog.String("Status", "Success"))
+		// inserting the received values in the database
+		id, err := storage.CreateStudent(student.Name, student.Email)
+		if err != nil {
+			response.WriteJsonResponse(w, http.StatusInternalServerError, &response.ResponseBody{
+				Status:  "Error",
+				Message: "Failed to Write",
+			})
+			slog.Info("", slog.String("Error: ", err.Error()))
+			return
+		}
+
+		// Resource Creation if no Error in Encountered
+		slog.Info("Student Created Successfully", slog.String("ID", strconv.FormatInt(id, 10)), slog.String("Status", "Success"))
 		response.WriteJsonResponse(w, http.StatusCreated, &response.ResponseBody{
 			Status:  "OK",
 			Message: "Resource Successfully Created",
