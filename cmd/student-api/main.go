@@ -11,15 +11,8 @@ import (
 	"time"
 
 	"github.com/greninja517/student-api/internal/config"
+	"github.com/greninja517/student-api/internal/http/handlers/student"
 )
-
-func HomePage(w http.ResponseWriter, r *http.Request) {
-	response := []byte("Welcome to Student API Home Page")
-	_, err := w.Write(response)
-	if err != nil {
-		log.Println("Failed to write the response. Retrying...")
-	}
-}
 
 func main() {
 	// loading the server configuration
@@ -27,7 +20,7 @@ func main() {
 
 	// setting up the router
 	router := http.NewServeMux()
-	router.HandleFunc("/", HomePage)
+	router.HandleFunc("POST /students", student.CreateStudent())
 
 	// setting up the server
 	server := &http.Server{
@@ -54,7 +47,7 @@ func main() {
 
 	if err := server.Shutdown(ctx); err != nil {
 		// slog is used for displayed the logs with key-value pair as well
-		slog.Error("Failed to Shutdown", slog.String("Error: ", err.Error()))
+		slog.Error("Forced to Shutdown the Server...", slog.String("Error: ", err.Error()))
 	}
 	slog.Info("Server shut down success...")
 }
