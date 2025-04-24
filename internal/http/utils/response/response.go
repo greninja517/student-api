@@ -10,7 +10,7 @@ import (
 )
 
 type ResponseBody struct {
-	Status  string
+	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
@@ -36,7 +36,7 @@ func ValidationError(validationErrors *validator.ValidationErrors) *ResponseBody
 }
 
 // Encoding the ReponseBody Struct into json response
-func WriteJsonResponse(w http.ResponseWriter, status int, body *ResponseBody) error {
+func WriteJsonResponse(w http.ResponseWriter, status int, body interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 

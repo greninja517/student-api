@@ -2,8 +2,10 @@ package sqlite
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/greninja517/student-api/internal/config"
+	"github.com/greninja517/student-api/internal/http/types"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -54,4 +56,26 @@ func (s *SqliteDB) CreateStudent(name string, email string) (int64, error) {
 
 	return id, nil
 
+}
+
+func (s *SqliteDB) GetStudent(id int64) (types.Student, error) {
+	var student types.Student
+
+	// prepare the query statement
+	stmt, err := s.DB.Prepare(`SELECT ID, Name,Email FROM students WHERE ID=?`)
+	if err != nil {
+		return types.Student{}, err
+	}
+	defer stmt.Close()
+
+	// execute the Statement
+	err = stmt.QueryRow(id).Scan(&student.ID, &student.Name, &student.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return types.Student{}, fmt.Errorf("no student found with id: %v", id)
+		}
+		return student, fmt.Errorf("query error for id: %v. Error: %v", id, err)
+	}
+
+	return student, nil
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/greninja517/student-api/internal/storage"
 )
 
-func Student(storage storage.Storage) http.HandlerFunc {
+func NewStudent(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
@@ -67,6 +67,40 @@ func Student(storage storage.Storage) http.HandlerFunc {
 			Status:  "OK",
 			Message: "Resource Successfully Created",
 		})
+
+	}
+}
+
+func GetStudentById(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+
+		// parsing id to int64 type
+		parsedID, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			slog.Info("", slog.String("Error", err.Error()))
+			response.WriteJsonResponse(w, http.StatusBadRequest, &response.ResponseBody{
+				Status:  "Error",
+				Message: "Invalid id value",
+			})
+			return
+		}
+
+		// getting the student info
+		slog.Info("Retreiving the Studnet Info...", slog.String("ID", id))
+		var student types.Student
+		student, err = storage.GetStudent(parsedID)
+		if err != nil {
+			slog.Info("", "Error", err.Error())
+			response.WriteJsonResponse(w, http.StatusInternalServerError, &response.ResponseBody{
+				Status:  "Error",
+				Message: "Not Found",
+			})
+			return
+		}
+
+		slog.Info("Retrieval Finished...", slog.String("Status", "Success"))
+		response.WriteJsonResponse(w, http.StatusOK, student)
 
 	}
 }
