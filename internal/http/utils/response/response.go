@@ -26,6 +26,10 @@ func ValidationError(validationErrors *validator.ValidationErrors) *ResponseBody
 		case "email":
 			message := fmt.Sprintf("Invalid value for %s field", err.Field())
 			errorMsg = append(errorMsg, message)
+
+		case "min":
+			message := fmt.Sprintf("%s should be minimum 3 characters long", err.Field())
+			errorMsg = append(errorMsg, message)
 		}
 	}
 

@@ -79,3 +79,26 @@ func (s *SqliteDB) GetStudent(id int64) (types.Student, error) {
 
 	return student, nil
 }
+
+func (s *SqliteDB) GetAll() ([]types.Student, error) {
+	var students []types.Student
+
+	// this doesn't require prepared statement
+	rows, err := s.DB.Query(`SELECT ID, Name, Email FROM students`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// reading each row and appending in the students slice
+	for rows.Next() {
+		var std types.Student
+		err := rows.Scan(&std.ID, &std.Name, &std.Email)
+		if err != nil {
+			return nil, err
+		}
+		students = append(students, std)
+	}
+
+	return students, nil
+}

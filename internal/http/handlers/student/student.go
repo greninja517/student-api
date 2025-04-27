@@ -87,7 +87,7 @@ func GetStudentById(storage storage.Storage) http.HandlerFunc {
 		}
 
 		// getting the student info
-		slog.Info("Retreiving the Studnet Info...", slog.String("ID", id))
+		slog.Info("Retreiving the Student Info...", slog.String("ID", id))
 		var student types.Student
 		student, err = storage.GetStudent(parsedID)
 		if err != nil {
@@ -101,6 +101,28 @@ func GetStudentById(storage storage.Storage) http.HandlerFunc {
 
 		slog.Info("Retrieval Finished...", slog.String("Status", "Success"))
 		response.WriteJsonResponse(w, http.StatusOK, student)
+
+	}
+}
+
+func GetAllStudents(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Retriving all students...")
+
+		// retreiving the students
+		var students []types.Student
+		students, err := storage.GetAll()
+		if err != nil {
+			slog.Info("", slog.String("Error", err.Error()))
+			response.WriteJsonResponse(w, http.StatusInternalServerError, &response.ResponseBody{
+				Status:  "Error",
+				Message: "Error fetching all students",
+			})
+			return
+		}
+
+		slog.Info("Retrieval Finished...", slog.String("Status", "Success"))
+		response.WriteJsonResponse(w, http.StatusOK, students)
 
 	}
 }
